@@ -1,6 +1,7 @@
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS  
+from  utils.predictMoodUtils import predict_emotion_util
 
 app = Flask(__name__)
 CORS(app, resources={
@@ -35,25 +36,18 @@ def after_request(response):
 def home():
     return "Welcome to the Emotion Prediction API!"
 
-# @app.route('/heartpredict', methods=['POST'])
-# def predict_heart_route():
-#     try:
-#         # Parse JSON input
-#         data = request.get_json()
-#         if not data or not isinstance(data, dict):
-#             return jsonify({'error': 'Invalid input data'}), 400
+@app.route('/predictEmotion', methods=['POST'])
+def predictMain(): 
+    try:
+        data = request.get_json()  # Get JSON input
+        text = data.get('text')    # Extract text
+        if not text:
+            return jsonify({"error": "No text provided"}), 400
 
-#         # Call prediction function
-#         heart_result = predict_disease_heart(data)
-
-#         # Check for errors in the result
-#         if 'error' in heart_result:
-#             return jsonify(heart_result), 400
-
-#         return jsonify(heart_result)
-#     except Exception as e:
-#         app.logger.error(f"Error in /heartpredict: {str(e)}")
-#         return jsonify({'error': 'Internal server error'}), 500
+        predicted_class = predict_emotion_util(text)  # Call your prediction function
+        return jsonify({"emotion": predicted_class})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

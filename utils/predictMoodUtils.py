@@ -22,11 +22,23 @@ with open(TOKENIZER_PATH, 'rb') as file:
     tokenizer = pickle.load(file)
 
 # Prediction function
-def predict_emotion(text):
+def predict_emotion_util(text):
     try:
         text_seq = tokenizer.texts_to_sequences([text])
         text_pad = pad_sequences(text_seq, maxlen=max_len)
-        predicted_class = np.argmax(model.predict(text_pad), axis=1)
+        pred = np.argmax(model.predict(text_pad), axis=1)
+        predicted_class = "need_more_data"
+        if pred == 0:
+            predicted_class = "sad"
+        elif pred == 1:
+            predicted_class = "happy"
+        elif pred == 2:
+            predicted_class = "love"
+        elif pred == 3:
+            predicted_class = "angry"
+        elif pred == 4:
+            predicted_class = "scared"
+        
         print(predicted_class)
         return predicted_class
     except Exception as e:
@@ -122,6 +134,6 @@ arr = [
     # predicted_class = np.argmax(model.predict(text_pad), axis=1)
     # print(predicted_class)
 
-# text = "Hello I am vey happy today, how about you!"  
+# text = "Hello I am vey dull today, how about you!"  
 # predict_emotion(text)
 
